@@ -1,0 +1,145 @@
+#root {
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 32px;
+  background: #171a20;
+  color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar input {
+  width: 280px;
+  padding: 10px 12px;
+  border: 1px solid #444b55;
+  border-radius: 6px;
+  background: #242830;
+  color: #f5f5f5;
+}
+
+.toolbar input::placeholder {
+  color: #8c929c;
+}
+
+.toolbar button {
+  padding: 10px 14px;
+  border: 1px solid #444b55;
+  border-radius: 6px;
+  background: #2d323a;
+  color: #f5f5f5;
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  background: #383e47;
+}
+
+.manga-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 28px;
+  max-width: 900px;
+}
+
+.manga-card {
+  position: relative;
+  padding: 16px;
+  border: 1px solid #3c424c;
+  border-radius: 8px;
+  background: #292e36;
+  min-height: 110px;
+}
+
+.manga-card h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.manga-card p {
+  margin: 0 0 6px;
+  color: #b5bac3;
+  font-size: 13px;
+}
+
+.manga-card span {
+  color: #8d939d;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .app {
+    padding: 20px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar input {
+    width: 100%;
+  }
+
+  .manga-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.add-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #3c424c;
+  border-radius: 8px;
+  background: #22262d;
+  max-width: 900px;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #444b55;
+  border-radius: 6px;
+  background: #171a20;
+  color: #f5f5f5;
+}
+
+.add-form button {
+  padding: 10px 14px;
+  border: 1px solid #444b55;
+  border-radius: 6px;
+  background: #2d323a;
+  color: #f5f5f5;
+  cursor: pointer;
+}
+
+.manga-card button {
+  margin-top: 12px;
+  padding: 7px 10px;
+  border: 1px solid #444b55;
+  border-radius: 6px;
+  background: #2d323a;
+  color: #f5f5f5;
+  cursor: pointer;
+}
+
+.manga-card button:hover {
+  background: #383e47;
+}
