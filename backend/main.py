@@ -31,12 +31,29 @@ def create_read(item: ReadingItem):
     conn.close()
     return {"message": "created"}
 
+class ReadingItemUpdate(BaseModel):
+    title: Optional[str] = None
+    current_chapter: Optional[int] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
 @app.put("/reads/{item_id}")
-def update_read(item_id: int, item: ReadingItem):
+def update_read(item_id: int, item: ReadingItemUpdate):
     conn = get_connection()
+    existing = conn.execute("SELECT * FROM reading_items WHERE id=?", (item_id,)).fetchone()
+
+    if existing is None:
+        conn.close()
+        return {"error": "not found"}
+
+    title = item.title if item.title is not None else existing["title"]
+    current_chapter = item.current_chapter if item.current_chapter is not None else existing["current_chapter"]
+    status = item.status if item.status is not None else existing["status"]
+    notes = item.notes if item.notes is not None else existing["notes"]
+
     conn.execute(
         "UPDATE reading_items SET title=?, current_chapter=?, status=?, notes=? WHERE id=?",
-        (item.title, item.current_chapter, item.status, item.notes, item_id)
+        (title, current_chapter, status, notes, item_id)
     )
     conn.commit()
     conn.close()
