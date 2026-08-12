@@ -46,6 +46,21 @@ function App() {
     .catch((error) => console.error('Failed to add manga:', error))
 }
 
+const deleteManga = (id, title) => {
+  if (!window.confirm(`Delete "${title}"?`)) {
+    return
+  }
+
+  fetch(`http://127.0.0.1:8000/reads/${id}`, {
+    method: 'DELETE',
+  })
+    .then((response) => response.json())
+    .then(() => {
+      setMangaList((prevList) => prevList.filter((manga) => manga.id !== id))
+    })
+    .catch((error) => console.error('Failed to delete manga:', error))
+}
+
 const updateChapter = (id, currentChapter) => {
   fetch(`http://127.0.0.1:8000/reads/${id}`, {
     method: 'PUT',
@@ -111,7 +126,10 @@ const updateChapter = (id, currentChapter) => {
             <p>Last read: Chap {manga.current_chapter}</p>
             <span>{manga.last_read}</span>
             <button onClick={() => updateChapter(manga.id, manga.current_chapter)}>
-              +1 Chapter
+               +1 Chapter
+            </button>
+            <button onClick={() => deleteManga(manga.id, manga.title)}>
+                Delete
             </button>
           </div>
         ))}
