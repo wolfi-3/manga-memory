@@ -1,58 +1,69 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [newTitle, setNewTitle] = useState('')
+  const [mangaList, setMangaList] = useState([])
 
-  const [mangaList, setMangaList] = useState([
-    {
-      title: 'Demon Slayer',
-      chapter: 120,
-      date: 'Aug 11',
-    },
-    {
-      title: 'Chainsaw Man',
-      chapter: 87,
-      date: 'Aug 10',
-    },
-    {
-      title: 'Spy x Family',
-      chapter: 139,
-      date: 'Aug 09',
-    },
-  ])
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/reads')
+      .then((response) => response.json())
+      .then((data) => setMangaList(data))
+      .catch((error) => console.error('Failed to fetch reads:', error))
+  }, [])
 
   const filteredManga = mangaList.filter((manga) =>
     manga.title.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleAddManga = () => {
-    if (!newTitle.trim()) {
-      return
-    }
+  if (!newTitle.trim()) {
+    return
+  }
 
-    const newManga = {
+  fetch('http://127.0.0.1:8000/reads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
       title: newTitle.trim(),
-      chapter: 0,
-      date: 'Today',
-    }
+      current_chapter: 0,
+      status: 'reading',
+      notes: '',
+    }),
+  })
+    .then((response) => response.json())
+    .then(() => {
+      return fetch('http://127.0.0.1:8000/reads')
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setMangaList(data)
+      setNewTitle('')
+      setShowAddForm(false)
+    })
+    .catch((error) => console.error('Failed to add manga:', error))
+}
 
-    setMangaList([...mangaList, newManga])
-    setNewTitle('')
-    setShowAddForm(false)
-  }
-
-  const updateChapter = (title) => {
-    setMangaList(
-      mangaList.map((manga) =>
-        manga.title === title
-          ? { ...manga, chapter: manga.chapter + 1 }
-          : manga
+const updateChapter = (id, currentChapter) => {
+  fetch(`http://127.0.0.1:8000/reads/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ current_chapter: currentChapter + 1 }),
+  })
+    .then((response) => response.json())
+    .then(() => {
+      setMangaList((prevList) =>
+        prevList.map((manga) =>
+          manga.id === id
+            ? { ...manga, current_chapter: currentChapter + 1 }
+            : manga
+        )
       )
-    )
-  }
+    })
+    .catch((error) => console.error('Failed to update chapter:', error))
+}
 
   return (
     <div className="app">
@@ -95,16 +106,13 @@ function App() {
       {/* 👇 MANGA LIST COMES AFTER THE FORM */}
       <div className="manga-list">
         {filteredManga.map((manga) => (
-          <div className="manga-card" key={manga.title}>
+          <div className="manga-card" key={manga.id}>
             <h2>{manga.title}</h2>
-
-              <p>Last read: Chap {manga.chapter}</p>
-
-              <span>{manga.date}</span>
-
-              <button onClick={() => updateChapter(manga.title)}>
-                +1 Chapter
-              </button>
+            <p>Last read: Chap {manga.current_chapter}</p>
+            <span>{manga.last_read}</span>
+            <button onClick={() => updateChapter(manga.id, manga.current_chapter)}>
+              +1 Chapter
+            </button>
           </div>
         ))}
       </div>
